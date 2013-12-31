@@ -1,18 +1,23 @@
+#!/usr/bin/php
 <?php
-if(!$_POST['giveaway']){
+
+if ($argc != 3 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 ?>
 
-<h1>Batch Giveaway System</h1>
+This is a command line PHP script for batch giveaway .
+Author   : Dimecoin Team
+Email    : dimecoin.org@gmail.com
+Homepage : http://dimecoin.org
 
-<form action="" method="POST" >
-	Amount:<input type="text" name="amount" /> <br />
-	Address:<textarea name="address_list" rows=10 cols="100"></textarea> <br />
-	<input type="submit" name="giveaway" value="giveaway" />
-</form>
+  Usage:
+  <?php echo $argv[0]; ?> amount address_list.txt
 
-<?
+  to print out. With the --help, -help, -h,
+  or -? options, you can get this help.
 
-}else{
+<?php
+} else {
+
 
 	define('SECURITY',true);
 
@@ -21,13 +26,12 @@ if(!$_POST['giveaway']){
 	include "lib/bitcoin.class.php";
 
 
-	$giveaway_amount = $_POST['amount'];
+	$giveaway_amount = (int)$argv[1];
 
 	if($giveaway_amount < 1 || $giveaway_amount > 100000000){
 		exit('amount error ');
 	}
 
-	//config for bitcoin rpc
 	$rpc_config = array(
 		'type' => 'http',
 		'username' => 'dimecoinrpc',
@@ -40,14 +44,10 @@ if(!$_POST['giveaway']){
 
 	$balance = $BTC_Client->getbalance();
 
-
-	$address_list = $_POST['address_list'];
-
-	if(strlen($address_list) == 0){
-		exit('address list error');
+	if(!file_exists($argv[2])){
+		exit('address file not exists');
 	}
-
-	$address_data = explode("\r\n",$address_list);
+	$address_data = file($argv[2]);
 
 	if(count($address_data) == 0){
 		echo 'no address';
@@ -62,31 +62,26 @@ if(!$_POST['giveaway']){
 		//check length of address
 		if(strlen($address) != 34){
 			echo $address.' is a bad address ';
-			echo '<br />';
-			continue;
+			echo "\n";
 		}
 
 		//call rpc port
 		$sendtoaddress = $BTC_Client->sendtoaddress($address,$giveaway_amount);
 
 		echo 'Sent '.$giveaway_amount.' coins to '.$address;
-		echo '<br />';
+		echo "\n";
 		echo 'txid:'.$sendtoaddress;
-		echo '<br />';
-		echo '<br />';
+		echo "\n";
+		echo "\n";
 
 		if(ENABLE_LOG == true){
 
-			$log = $address.'|'.$amount.'|'.$sendtoaddress.'|'.date("Y-m-d G:i:s",time())."\r\n";
+			$log = $address.'|'.$giveaway_amount.'|'.$sendtoaddress.'|'.date("Y-m-d G:i:s",time())."\r\n";
 			file_put_contents("giveaway_log.txt",$log,FILE_APPEND);
 		}
 
 	}
 
-	echo '<a href="javascript:history.go(-1);" >Back</a>';
 
 }
 
-?>
-
-Powered By <a href="http://dimecoin.org" >Dimecoin Team </a>

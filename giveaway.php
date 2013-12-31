@@ -62,6 +62,7 @@ if(!$_POST['giveaway']){
 		if(strlen($address) != 34){
 			echo $address.' is a bad address ';
 			echo '<br />';
+			continue;
 		}
 
 		//call rpc port

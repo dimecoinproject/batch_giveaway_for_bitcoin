@@ -21,11 +21,23 @@ So Many Giveaway Post on Bitcointalks , But the wallet client only support send 
 Requirement
 ----------------
 
-PHP5 with CURL
-Nginx Or Apache
+- (Web)PHP5-fpm with CURL + Nginx or  Apache
+- (Cli)PHP5-cli with CURL
 
-TODO
+Usage
 ----------------
 
-Command Line Version
+Web Version
+
+Copy the code to your www folder
+
+http://localhost/giveaway/giveaway_web.php
+
+Cli Version
+
+php giveaway_cli.php amount address_list.txt
+
+
+
+
  
